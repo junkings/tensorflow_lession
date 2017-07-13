@@ -164,7 +164,7 @@ def getKeyByvalue(data, value):
 
 	return -1
 
-valuelist = ["登录", "闪退", "卡顿"]
+valuelist = ["登不上", "闪退", "进不去","连不上"]
 for value in valuelist:
 	index = getKeyByvalue(reverse_dictionary, value)
 	if index != -1:
