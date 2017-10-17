@@ -58,8 +58,8 @@ import pickle
 
 # vocabulary = read_data(filename)
 # read data
-pkl_file = open('data.pkl', 'rb')
-data = pickle.load(pkl_file)
+pkl_file = open('data_all_1011.pkl', 'rb')
+data = pickle.load(pkl_file)[-1]
 vocabulary = []
 
 # for index in data:
@@ -67,16 +67,18 @@ vocabulary = []
 # 		for word in sentence.split(" "):
 # 			if word != "" and word != " ":
 # 				vocabulary.append(word)
-
+# stw_list = [line.strip() for line in open(r'stopwords.txt', 'r', encoding="utf8").readlines()]
 for sentence in data:
+	# print(sentence)
+	# input()
 	for word in sentence.split(" "):
-		if word != "" and word != " ":
+		if word != "" and word != " " :
 			vocabulary.append(word)
-# print(vocabulary[0:1000])
+# print(vocabulary)
 print('Data size', len(vocabulary))
-# input()
 # Step 2: Build the dictionary and replace rare words with UNK token.
-vocabulary_size = 2000
+# 建立字典，多余100000的设置为UNK
+vocabulary_size = 100000
 
 
 def build_dataset(words, n_words):
@@ -164,7 +166,7 @@ def getKeyByvalue(data, value):
 
 	return -1
 
-valuelist = ["登不上", "闪退", "进不去","连不上"]
+valuelist = ["登录", "闪退", "卡顿"]
 for value in valuelist:
 	index = getKeyByvalue(reverse_dictionary, value)
 	if index != -1:
@@ -210,7 +212,7 @@ with graph.as_default():
                      num_classes=vocabulary_size))
 
   # Construct the SGD optimizer using a learning rate of 1.0.
-  optimizer = tf.train.GradientDescentOptimizer(1.0).minimize(loss)
+  optimizer = tf.train.GradientDescentOptimizer(0.01).minimize(loss)
 
   # Compute the cosine similarity between minibatch examples and all embeddings.
   norm = tf.sqrt(tf.reduce_sum(tf.square(embeddings), 1, keep_dims=True))
@@ -252,7 +254,6 @@ with tf.Session(graph=graph) as session:
     # Note that this is expensive (~20% slowdown if computed every 500 steps)
     if step % 10000 == 0:
       sim = similarity.eval()
-      print("similarity %s", similarity)
       for i in xrange(valid_size):
         valid_word = reverse_dictionary[valid_examples[i]]
         top_k = 8  # number of nearest neighbors
